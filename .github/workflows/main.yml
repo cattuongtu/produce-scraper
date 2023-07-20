@@ -23,6 +23,9 @@ jobs:
           pip install pipreqs
           pipreqs .
           pip install -r requirements.txt
+          
+      - uses: browser-actions/setup-chrome@latest
+      - run: chrome --version
 
       - name: execute py script # run main.py
         run: python main.py
