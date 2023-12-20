@@ -54,10 +54,12 @@ def get_data(prompt):
     }
 
     response = requests.post(url, headers=headers, json=data)
-
+    response_json = response.json()
     print("Status Code:", response.status_code)
     print("Response Body:", response.json())
-    time.sleep(30)
+    print("Message returned: ", response_json['choices'][0]['message']['content'])
+    
+    return response_json['choices'][0]['message']['content']
 
 def create_object(product, season):
     prompt = "Write a one sentence description about a(n) " + product.lower()
@@ -82,7 +84,6 @@ def connect_db():
 if __name__ == "__main__":
     seasons = ["Spring", "Summer", "Winter", "Fall"]
     conn = None
-    get_data("Say this is a test!")
     try:
         conn = connect_db()
         cur = conn.cursor()

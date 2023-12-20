@@ -1,0 +1,59 @@
+@media (width: 1024px) {
+  .usa-header--megamenu .usa-nav__primary span {
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    text-transform: uppercase;
+  }
+  .usa-header--megamenu .usa-nav__primary button.usa-accordion__button[aria-expanded=false]:after {
+    content: "";
+  }
+}
+.usa-search [type=search],
+.usa-search .usa-search-input {
+  background-color: #5c5c5c;
+  border-color: #5c5c5c !important;
+  color: white;
+}
+.usa-search [type=search]::placeholder,
+.usa-search .usa-search-input::placeholder {
+  color: #fff;
+  opacity: unset;
+}
+.usa-search [type=submit],
+.usa-search .usa-search-submit {
+  background-color: #5c5c5c;
+}
+
+#library-facets-title-link {
+  display: none;
+}
+
+@media (max-width: 1040px) {
+  #library-facets-title-link {
+    display: block;
+    text-transform: uppercase;
+  }
+}
+.page-node-type-library-material .library__info {
+  display: table;
+  width: 100%;
+  padding: 10px 0;
+}
+.page-node-type-library-material .library__info .material_year .library__material-label,
+.page-node-type-library-material .library__info .material-developer-author .library__material-label {
+  width: 30%;
+}
+
+.page-node-type-library-material .library__thumbnail {
+  float: right;
+}
+
+@media (max-width: 600px) {
+  .page-node-type-library-material .library__thumbnail {
+    float: none;
+    margin-top: 0;
+  }
+}
+
+/*# sourceMappingURL=custom.css.map */

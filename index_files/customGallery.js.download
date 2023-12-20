@@ -1,0 +1,260 @@
+(function ($, Drupal) {
+
+    //Add Placeholder on Site-Wide Search
+    document.getElementById("header-search").setAttribute("placeholder", "Search");
+
+
+
+    var view = document.getElementsByClassName("success-col");
+
+    //Set Success Stories Width on Home Page
+    if (view.length != 0){
+        for( let i = 0; i < view.length; i++){
+            view[i].style.width = "30%";
+        }
+    }
+
+    var row = document.getElementsByClassName("success-row")[0];
+
+    if (row != null){
+
+        var scrollBack = document.getElementById('ss-left-button');
+        var scrollForward = document.getElementById('ss-right-button');
+        var scrollAmnt = 0;
+        var scrollMin = 0;
+        var scrollMax = row.clientWidth;
+    
+        if (window.innerWidth < 500){
+            scrollMax = row.clientWidth *5;
+        }
+    
+        //Handle Scroll Buttons on Success Stories 
+        scrollBack.addEventListener("click", function(){
+        
+              row.scrollTo({
+                top: 0,
+                left: Math.max(scrollAmnt -= (view[0].clientWidth), scrollMin),
+                behavior: "smooth",
+            });
+            
+           
+        } );
+    
+        scrollForward.addEventListener("click", function(){
+        
+            row.scrollTo({
+                top: 0,
+                left: Math.min(scrollAmnt += (view[0].clientWidth), scrollMax),
+                behavior: "smooth",
+            });
+    
+        } ); 
+    
+    }
+
+    //Handle recepies Carousel
+
+    //check if its on page
+    var recepies = document.getElementsByClassName("paragraph--type-recipes-carousel")[0];
+
+    if (recepies){
+        var rview = document.getElementsByClassName("recipe-col");
+
+        //Set Success Stories Width on Home Page
+        if (rview.length != 0){
+            for( let i = 0; i < rview.length; i++){
+                rview[i].style.width = "30%";
+            }
+        }
+    
+        var rrow = document.getElementsByClassName("recipe-row")[0];
+    
+        if (rrow != null){
+    
+            var scrollBack = document.getElementById('rec-left-button');
+            var scrollForward = document.getElementById('rec-right-button');
+            var scrollAmnt = 0;
+            var scrollMin = 0;
+            var scrollMax = rrow.clientWidth;
+        
+            if (window.innerWidth < 500){
+                scrollMax = rrow.clientWidth *5;
+            }
+        
+            //Handle Scroll Buttons on Success Stories 
+            scrollBack.addEventListener("click", function(){
+            
+                  rrow.scrollTo({
+                    top: 0,
+                    left: Math.max(scrollAmnt -= (rview[0].clientWidth), scrollMin),
+                    behavior: "smooth",
+                });
+                
+               
+            } );
+        
+            scrollForward.addEventListener("click", function(){
+            
+                rrow.scrollTo({
+                    top: 0,
+                    left: Math.min(scrollAmnt += (rview[0].clientWidth), scrollMax),
+                    behavior: "smooth",
+                });
+        
+            } ); 
+        
+        }
+
+    }
+
+    //Handle Mobile Nav Snap-Ed Logo
+    var collapsedHeader = document.getElementsByClassName("usa-nav-close")[0];
+    
+    if (collapsedHeader != null){
+        
+        var parent = collapsedHeader.parentNode;
+        var logoContainer = document.createElement('div');
+        logoContainer.className = "usa-logo-mini";
+        var logo = document.createElement("img");
+        logo.src = "/themes/usda/img/usda-symbol.svg";
+        logoContainer.appendChild(logo);
+        var title = document.createElement('h3');
+        title.innerText = "Snap-Ed Connection";
+        logoContainer.appendChild(title);
+        parent.appendChild(logoContainer);
+    }
+
+    //on this page block
+
+    var onpage = document.getElementById("onpagelinks");
+
+    if (onpage){
+
+        var headers = document.querySelectorAll('#main-content h2');
+
+        if (headers[0].innerText == "On This Page"){
+            headers.splice(0, 1);
+        }
+        
+        //dont add Banner header
+        for (let i = 1; i < headers.length; i++){
+
+            
+            //stop after 12 which is the max
+    
+            if (i <= 12 ){
+
+                headers[i].id = String("header"+i);
+
+                let temp = document.createElement("li");
+                let text = document.createTextNode(headers[i].innerText);
+                let atag = document.createElement("a");
+                atag.appendChild(text);
+
+                atag.href = "#"+headers[i].id;
+                temp.appendChild(atag);
+                onpage.appendChild(temp);
+
+            }
+
+        }
+    }
+
+    // Checkbox on libray page 
+
+   
+        
+        var btn = document.getElementById("clear-filters");
+
+        if (btn != null){
+            btn.addEventListener("click", function(){
+                //send back to original page with no filters
+                window.location.href= "/library/materials";
+            });
+        
+        }
+
+        //Gallery Page 
+
+        var gallerybtn = document.getElementById("mobile-gallery-filters");
+
+        var currentPath = window.location.href;
+
+        if (gallerybtn != null){
+
+
+            gallerybtn.addEventListener("click", function(){
+                document.getElementsByClassName("library-sidebar")[0].style.display = "block";
+            });
+
+            var apply = document.getElementById("apply-gallery-btn"); 
+            apply.addEventListener("click", function(){
+                document.getElementsByClassName("library-sidebar")[0].style.display = "none";
+                currentPath = window.location.href;
+            });
+
+
+            var cancel = document.getElementById("cancel-gallery-btn");
+            cancel.addEventListener("click", function(){
+                window.location.href = currentPath;
+            });
+
+        }
+
+
+
+
+        
+
+
+    var lib = document.getElementsByClassName("usa-hero-form")[0];
+    var benefits = document.getElementsByClassName("paragraph--type-snap-benefits")[0];
+
+    //handle height difference
+    if (lib != null && benefits != null && window.innerWidth > 668){
+
+        var height = lib.offsetHeight;
+        height = height+"px;";
+        benefits.setAttribute("style", "height: "+height);
+
+        //on resize of page
+        window.addEventListener('resize', function(){
+            var height = lib.offsetHeight;
+            height = height+"px !important;";
+            benefits.setAttribute("style", "height: "+height);
+        });
+    }
+
+    //map page 
+  /*  if (window.location.href.toString().includes("/state-snap-ed-programs")){
+
+        var views = document.getElementsByClassName("paragraph--type-view");
+        for (let i = 0; i< views.length; i++){
+            var hasChild = views[i].querySelector("#d3-map");
+            if (hasChild != null){
+                var grid = views[i].querySelector(".usa-grid");
+                grid.style.minWidth = "90%";
+                break;
+            }
+        }
+
+    }
+    */
+
+    if (window.location.href.includes("/conference-calendar")){
+
+        var links = document.getElementsByClassName('event-link');
+
+        for (let i = 0; i < links.length; i++){
+            console.log(links[i].innerText, links[i].href);
+            var index = links[i].href.lastIndexOf("/");
+            var substr = links[i].href.substring(index+1, links[i].href.length);
+            console.log(substr);
+            if (substr == links[i].innerText){
+                links[i].removeAttribute("href");
+            }
+        }
+
+    }
+
+})(jQuery, Drupal);

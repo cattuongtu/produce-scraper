@@ -1,0 +1,14 @@
+(function ($, Drupal) {
+  Drupal.behaviors.maphilight = {
+    attach: function(context, settings) {
+      var options = {
+        fill: false,
+        stroke: true, // default
+        strokeColor: '000',
+        strokeOpacity: 0.8,
+        strokeWidth: 2
+      };
+      $('img[usemap]').maphilight(options);
+    }
+  }
+})(jQuery, Drupal);

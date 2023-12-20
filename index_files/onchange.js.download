@@ -1,0 +1,7 @@
+(function ($) {
+    $(document).ready(function () {
+      $('#edit-sort-by--2').change(function () {
+        $(this).closest('form').submit();
+      });
+    });
+  })(jQuery);

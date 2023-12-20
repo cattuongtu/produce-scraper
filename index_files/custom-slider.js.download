@@ -1,0 +1,8 @@
+jQuery(document).ready(function ($) {
+	jQuery( ".success-story-slideshow #ss-left-button" ).click(function( event ){
+		event.preventDefault();
+	});
+	jQuery( ".success-story-slideshow #ss-right-button" ).click(function( event ){
+		event.preventDefault();
+	});
+}(jQuery));

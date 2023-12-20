@@ -1,0 +1,139 @@
+(function ($, Drupal) {
+  var searchUrl, hasSessionStorage = typeof sessionStorage !== "undefined";
+
+  var setSearchUrl = function(href) {
+    if (!searchUrl) {
+      var searchBases = [location.origin + "/library/materials", location.origin + "/evaluation/evaluation-tools"];
+      $.each(searchBases, function(i, searchBase) {
+        if (document.referrer.substr(0, searchBase.length) === searchBase) {
+          searchUrl = document.referrer;
+        }
+        else if (hasSessionStorage && sessionStorage.last_eval_search) {
+          // @todo: do we need to handle evaluation search and library search differently?
+          searchUrl = sessionStorage.last_eval_search;
+        }
+        else if (hasSessionStorage && sessionStorage.last_library_search) {
+          searchUrl = sessionStorage.last_library_search;
+        }
+        else {
+          searchUrl = href;
+        }
+      });
+    }
+  };
+
+  Drupal.behaviors.snaped = {
+    attach: function (context, settings) {
+      $(function() {
+
+        // Check if web fonts are blocked
+        var webfont_selector = '.usa-accordion-button.usa-nav-link';
+        const $elements = $(once('checkFontLoaded', $(webfont_selector + ':last'), context));
+        $elements.each(function () {
+          var ff_initial = $(this).css('font-family');
+          var ff_test = ff_initial.replace(/^.*?,\s*/, '');
+          var width_initial = $(this).width();
+          $(this).css('font-family', ff_test);
+          if ($(this).width() <= width_initial) {
+            $(webfont_selector, context).css({'letter-spacing': '-.5px', 'padding-left': '15px', 'padding-right': '15px'});
+          }
+          else {
+            $(this).css('font-family', '');
+          }
+        });
+
+        // Store last library search.
+        const $libraryelements = $(once('snapedInit', document, context));
+        $libraryelements.each(function (i) {
+          if (hasSessionStorage) {
+            if (location.pathname.match(/^\/library\/materials?$/)) {
+              sessionStorage.last_library_search = location.href;
+            }
+            else if (location.pathname.match(/\/evaluation\/evaluation-tools$/)) {
+              sessionStorage.last_eval_search = location.href;
+            }
+          }
+        });
+        // Set href on "Back to Search" link.
+        $(once('searchBackLink', '.search-back-link', context)).prop('href', function (i, href) {
+          setSearchUrl(href);
+          return searchUrl;
+        });
+
+        // Collapsible facets, relies on Facets JS running first to transform to checkboxes.
+        // Toggle visibility and class on click.
+        // $('.facet-item-toggle', context).once('toggleFacet').on('click.snaped', function() {
+        //   $(this).toggleClass('open').siblings('ul').slideToggle();
+        // })
+        $(once('toggleFacet', '.facet-item-toggle', context)).click(function (e) {
+          e.preventDefault();
+          $(this).toggleClass('open').siblings('ul').slideToggle();
+          if($(this).attr('aria-expanded')=='false'){
+            $(this).attr('aria-expanded', 'true');
+          } else {
+            $(this).attr('aria-expanded', 'false');
+          }
+          return false;
+        })
+        // Hide child list by default.
+        .siblings('ul').hide()
+        // Show child list and add open class if checked.
+        .filter(':has(input:checked)').show().siblings('.facet-item-toggle').addClass('open');
+
+        // Auto-size photo gallery images to fit in nice almost-equal-height rows.
+        var autoSize = function(listSel, itemSel) {
+          $(once('scaleGallery', listSel, context)).each(function () {
+            var items = $(itemSel, this);
+            if (items.length <= 1 || items.filter(':eq(0)').find('a').length > 1) return;
+            var baseWidth = 4.2, widthLimit = items.length <=5 ? 10 : baseWidth, ratios=items.map(function(i,item){var $img=$('img',item); return $img.attr('width')/$img.attr('height');}).get();
+            for (var i=0,start=0,width=0;i<ratios.length;) {
+              while (width<widthLimit && i<ratios.length) {
+                width+=ratios[i++];
+              }
+              var lastMargin = '0', delta=i-start, intrinsicWidth=width;
+              if (width<baseWidth*.8) {
+                width=baseWidth*1.15;
+                lastMargin = 98*(width - intrinsicWidth)/width+'%';
+              }
+              items.slice(start, i).each(function(j,item){
+                var basis=ratios[start+j]/width, rightMargin= j==delta-1?lastMargin:'2%';
+                $(item).css({'flex': '0 0 '+basis*(100-(i-start)*2)+'%',width:'auto',margin:'0 ' + rightMargin + ' 3% 0'});
+              });
+              start=i;
+              width=0;
+            }
+          });
+        };
+        autoSize('.photo-gallery-featured-categories-photo', 'li');
+        autoSize('.photo-gallery-list', '.photo-gallery-list--item');
+
+        // Make entire divs clickable for events (conference and webinar) block
+        $("#block-views-block-events-conferences .usda-blog-teaser-content, #block-views-block-events-block-1 .usda-blog-teaser-content").click(function() {
+          window.open(
+            $(this).find("a.event-link").attr("href"),
+            $(this).find("a.event-link").attr("target")
+          );
+          return false;
+        });
+
+        // Make entire landing page card clickable
+        $(".paragraph--type-landing-page-link").click(function() {
+          window.open(
+            $(this).find(".usda-featured-links-href a").attr("href"), '_self'
+          );
+          return false;
+        });
+
+        // Make recipe cards clickable
+        $(".paragraph--style-recipe-content-list li").click(function() {
+          window.open(
+            $(this).find(".usda-blog-teaser-content h4 a").attr("href"), '_self'
+          );
+          return false;
+        });
+
+      });
+    }
+  };
+
+})(jQuery, Drupal);

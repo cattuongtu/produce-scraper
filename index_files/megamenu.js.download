@@ -1,0 +1,32 @@
+// Better hide/show toggle on megamenu click.
+jQuery('.usa-header--megamenu .usa-accordion__button').each(function(){
+  jQuery(this).on('click', function(e) {
+    var submenu = jQuery(this).next('.usa-nav__submenu');
+    // If submenu is closed, open it on button click.
+    // Make sure all other submenus also are closed.
+    // If submenu is open, clicking the button will close it.
+    if (jQuery(submenu).css('display') === 'none') {
+      jQuery('.usa-nav__submenu').css('display', 'none');
+      jQuery(submenu).css('display', 'block');
+    } else {
+      jQuery('.usa-nav__submenu').css('display', 'none');
+    }
+  });
+});
+
+(function ($, Drupal) {
+  var pagePath = $(location).attr('pathname')
+  switch(pagePath) {
+    case '/':
+      $('.home-link a').addClass('is-active');
+      break;
+    case '/state-snap-ed-programs':
+      $('.info-by-state a').addClass('is-active');
+      break;
+      case '/library/materials':
+      $('.snap-ed-library a').addClass('is-active');
+      break;
+    default:
+      $('.usa-header--megamenu .usa-nav__primary-item a[href="' + pagePath + '"]').parents('.usa-nav__primary-item').addClass('is-active');
+  }
+})(jQuery, Drupal);

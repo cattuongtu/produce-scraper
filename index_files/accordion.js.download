@@ -1,0 +1,30 @@
+(function ($, Drupal) {
+  var accordionButtons = $('.accordion-controls li button');
+
+  function accordionToggle() {
+
+    $('.accordion-controls li button').on('click', function(e) {
+      $control = $(this);
+
+      accordionContent = $control.attr('aria-controls');
+
+      isAriaExp = $control.attr('aria-expanded');
+      newAriaExp = (isAriaExp == "false") ? "true" : "false";
+      $control.attr('aria-expanded', newAriaExp);
+
+      isAriaHid = $('#' + accordionContent).attr('aria-hidden');
+      if (isAriaHid == "true") {
+        $('#' + accordionContent).attr('aria-hidden', "false");
+        $(this).closest('li').removeClass('accordion-closed');
+      } else {
+        $('#' + accordionContent).attr('aria-hidden', "true");
+        $(this).closest('li').addClass('accordion-closed');
+      }
+    });
+  };
+
+  //call this function on page load
+  accordionToggle();
+
+
+})(jQuery, Drupal);

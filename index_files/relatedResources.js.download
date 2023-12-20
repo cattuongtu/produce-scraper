@@ -1,0 +1,30 @@
+(function ($, Drupal) {
+
+    // align image on resource block
+    $( ".paragraph--type-related-resources-block" ).each(function() {
+        var loc = $(this).find(".rr-image-loc").text();
+        
+        if (loc != "left"){
+            $(this).children(".rr-card-container").addClass("content-left");
+            $(this).children(".related-resource-img-background").addClass("bg-right");
+            $(this).children(".related-resource-img").addClass("img-right");
+        } else {
+            $(this).children(".rr-card-container").addClass("content-right");
+            $(this).children(".related-resource-img-background").addClass("bg-left");
+            $(this).children(".related-resource-img").addClass("img-left");
+        }
+
+        $(this).find('.resource-title:first').addClass('resource-active');
+        $(this).find('.resource-container:first ').addClass('resource-content-active');
+      });
+
+    //   related resource change active content
+      $( ".resource-title" ).on( "click", function() {
+        var headerText = $(this).text().trim();
+        $(this).parent().find('.resource-title').removeClass('resource-active');
+        $(this).parent().parent().find('.resource-container').removeClass('resource-content-active');
+        $(this).addClass('resource-active');
+        $(this).parent().parent().find(".rr-title > div:contains('"+headerText+"')").parent().parent().addClass('resource-content-active');
+      } );
+
+})(jQuery, Drupal);

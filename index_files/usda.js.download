@@ -1,0 +1,101 @@
+(function ($, Drupal) {
+  Drupal.behaviors.usda = {
+    attach: function (context, settings) {
+      $(once('usdaDropdown', '.paragraph--type-dropdown-menu', context)).each(function (i) {
+        // Add <label> around <h2> contents
+        var dropdownId = 'dropdown_menu_' + i;
+        $('h2', this).wrapInner('<label for="' + dropdownId + '"/>');
+        // Convert <ul> to <select> and wire up events
+        var $options = $('li a', this).map(function(){return $('<option>').attr('value', this.href).text($(this).text())[0];}).get();
+        $options.unshift($('<option value=""> - Choose Topic - </option>')[0]);
+        var maxOptionLength = Math.max.apply(this, $('li', this).map(function(){return $(this).text().length;}));
+        var width = Math.min(160 + 8 * maxOptionLength, $(window).width() * .9);
+        var select = $('<select>').attr('id', dropdownId).append($options).css('width', width).appendTo($('div', this))
+        .bind('change', function(e) {
+          var val = $(this).val();
+          if (val) {
+            location.href = val;
+          }
+        });
+        $('ul', this).remove();
+      });
+
+      $(once('usdaDropdownSlider', '.paragraph--type-dropdown-menu-slider', context)).each(function (i) {
+        // Add <label> around <h2> contents
+        var dropdownId = 'dropdown_menu_slider_' + i;
+        $('h2', this).wrapInner('<label for="' + dropdownId + '"/>');
+        // Convert <ul> to <select> and wire up events
+        var $options = $('li', this).wrapInner('<option/>').find('option');
+        var maxOptionLength = Math.max.apply(this, $('li', this).map(function(){return $(this).text().length;}));
+        var width = Math.min(160 + 8 * maxOptionLength, $(window).width() * .9);
+        $('<select id="' + dropdownId + '"/>').append($options).appendTo($('div', this)).css('width', width)
+        .bind('change', function(e) {
+          val = $(this).find(':selected').html();
+          location.href = $(val).attr('href');
+        });
+        $('ul', this).remove();
+      });
+
+      // Add accessibility labels to generic landmarks that don't have them.
+      var labelMap = {
+        'section.paragraph--type-basic-hero': 'Promoted Content',
+        'figure[role=group]': 'Figure'
+      };
+      $.each(labelMap, function(selector, label) {
+        $(selector.replace(/,|$/, ':not([aria-label]):not([aria-labelledby])'))
+          .attr('aria-label', function(i, attr) {return label + ' ' + (i+1);});
+      });
+
+      var paragraphsColumnHeader = $('.usda-paragraph-column > *:first-child');
+      // set equal height
+      paragraphsColumnHeader.matchHeight();
+      // add span to first-child element
+      paragraphsColumnHeader.each(function() {
+        $(this).wrapInner("<span></span>");
+      });
+
+      // Allow clicking the logo to navigate to the home page.
+      $('.usda-logo').on('click', function() {
+        location.href = '/';
+      });
+
+      // Close active nav menu on background click.
+      var $menu = $('nav#block-usda-main-menu');
+      if($menu.length > 0) {
+        $('html').click(function(e) {
+          if(e.target && !($('body').hasClass('usa-mobile_nav-active')) && !($.contains($menu[0], e.target))) {
+            $('button[aria-expanded="true"]', $menu).trigger('click');
+          }
+        });
+      }
+
+      // Accordion
+      $('.accordion-heading').on('click', function() {
+        var $this = $(this);
+
+        if($this.attr('aria-expanded') === 'false') {
+          $this.attr('aria-expanded', 'true');
+          $this.next('.accordion-content').addClass('open');
+        } else {
+          $this.attr('aria-expanded', 'false');
+          $this.next('.accordion-content').removeClass('open');
+        }
+      });
+
+      // Toggle nutrient information label
+      $('a.toggle-nutrition-label').on('click', function(e) {
+        e.preventDefault();
+        var $this = $(this);
+        if ($this.hasClass('active')) {
+            $('.nutrient-trans-fat,  .nutrient-monounsaturated-fat, .nutrient-polyunsaturated-fat, .nutrient-linoleic-acid, .nutrient-α-linolenic-acid, .nutrient-omega-3---epa, .nutrient-omega-3---dha, .nutrient-potassium, .nutrient-vitamin-a, .nutrient-vitamin-c, .nutrient-copper, .nutrient-magnesium, .nutrient-phosphorus, .nutrient-selenium, .nutrient-zinc, .nutrient-vitamin-a, .nutrient-vitamin-b6, .nutrient-vitamin-b12, .nutrient-vitamin-c, .nutrient-vitamin-e, .nutrient-vitamin-k, .nutrient-folate, .nutrient-thiamin, .nutrient-riboflavin, .nutrient-niacin, .nutrient-choline, .nutrient-subheader').hide();
+            $this.removeClass('active');
+            $this.text("Show Full Display")
+        } else {
+            $this.addClass('active');
+            $this.text("Show Less")
+            $(".nutrient-row, .nutrient-subheader").show();
+        }
+      });
+    }
+  };
+})(jQuery, Drupal);
